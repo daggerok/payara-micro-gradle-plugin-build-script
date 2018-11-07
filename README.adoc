@@ -26,7 +26,7 @@ ls ./build | grep 'microbundle'
 java -jar build/*-microbundle.jar
 ----
 
-requirements: expected to be used in war project
+requirements: expected to be used for war packaged projects
 
 == local
 
