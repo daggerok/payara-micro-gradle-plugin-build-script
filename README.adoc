@@ -6,7 +6,29 @@ Current project demonstrates regular Gradle functionality usage -
 payara-micro maven plugin similar gradle tasks implementation
 (`bundle` and `start`)
 
-.usage (similar to payara-micrio maven plugin)
+.install
+[source,gradle]
+----
+apply from: 'https://raw.githubusercontent.com/daggerok/payara-micro-gradle-plugin-build-script/master/gradle/payara-micro-gradle-plugin.gradle'
+defaultTasks 'clean', 'bundle'
+----
+
+.usage
+[source,gradle]
+----
+./gradlew start
+
+# or
+./gradlew bundle
+ls ./build | grep 'microbundle'
+java -jar build/*-microbundle.jar
+----
+
+requirements: expected to be used in war project
+
+== local usage
+
+.local usage (similar to payara-micrio maven plugin)
 [source,bash]
 ----
 ./gradlew bundle
