@@ -1,5 +1,9 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
+repositories {
+  mavenCentral()
+}
+
 class PayaraMicroGradlePlugin implements Plugin<Project> {
 
   static final String PAYARA_MICRO_VERSION = '5.182'

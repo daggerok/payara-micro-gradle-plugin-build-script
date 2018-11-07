@@ -35,5 +35,22 @@ dependencies {
 }
 
 apply from: 'https://raw.githubusercontent.com/daggerok/payara-micro-gradle-plugin-build-script/master/gradle/payara-micro-gradle-plugin.gradle'
+defaultTasks 'clean', 'bundle'
 
-defaultTasks('clean', 'bundle')
+project(':multi') {
+  apply plugin: 'io.franzbecker.gradle-lombok'
+  lombok.version = '1.18.4'
+
+  version '1.0.0-SNAPSHOT'
+  group 'com.github.daggerok'
+  sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+
+  apply(from: project.file('../gradle/payara-micro-gradle-plugin.gradle'))
+
+  //apply plugin: 'war' // providedCompile
+  dependencies {
+    providedCompile 'javax:javaee-api:8.0'
+  }
+
+  defaultTasks('clean', 'bundle')
+}
