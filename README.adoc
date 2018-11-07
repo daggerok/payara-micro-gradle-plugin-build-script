@@ -1,0 +1,60 @@
+= payara-micro-gradle-plugin (inline build script) image:https://travis-ci.org/daggerok/payara-micro-gradle-plugin-build-script.svg?branch=master["Build Status", link="https://travis-ci.org/daggerok/payara-micro-gradle-plugin-build-script"]
+
+__inline build script plugin implementation__
+
+Current project demonstrates regular Gradle functionality usage -
+payara-micro maven plugin similar gradle tasks implementation
+(`bundle` and `start`)
+
+.usage (similar to payara-micrio maven plugin)
+[source,bash]
+----
+./gradlew bundle
+
+./gradlew start
+# or
+java -jar build/*-microbundle.jar
+----
+
+== build, run and test
+
+.build
+[source,bash]
+----
+./gradlew clean bundle
+----
+
+.run (with remote debug for example)
+[source,bash]
+----
+./gradle start
+# or debug:
+java -jar -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005  -Djava.net.preferIPv4Stack=true ./build/*-microbundle.jar
+----
+
+.test: post new data
+[source,bash]
+----
+http :8080 string=one
+http :8080 string=two
+http :8080 string=3
+# output:
+HTTP/1.1 202 Accepted
+Content-Length: 0
+Server: Payara Micro #badassfish
+X-Frame-Options: SAMEORIGIN
+
+http :8080
+# output
+HTTP/1.1 200 OK
+Content-Length: 17
+Content-Type: application/json
+Server: Payara Micro #badassfish
+X-Frame-Options: SAMEORIGIN
+
+[
+    "two",
+    "one",
+    "3"
+]
+----

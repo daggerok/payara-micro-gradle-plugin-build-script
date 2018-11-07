@@ -1,0 +1,65 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+class PayaraMicroGradlePlugin implements Plugin<Project> {
+
+  static final String PAYARA_MICRO_VERSION = '5.182'
+  static final String TASK_GROUP = 'Payara Micro'
+  static final String BUNDLE_TASK_NAME = 'bundle'
+  static final String BUNDLE_TASK_DESCRIPTION = "Create payara-micro application uber jar: 'mvn package payara-micro:bundle'."
+  static final String[] BUNDLE_TASK_SHOULD_RUN_AFTER = ['clean', 'war']
+  static final String[] BUNDLE_TASK_DEPENDS_ON = ['war']
+  static final String START_TASK_NAME = 'start'
+  static final String START_TASK_DESCRIPTION = "Run payara-micro application: 'mvn package payara-micro:bundle payara-micro:start'."
+  static final String[] START_TASK_SHOULD_RUN_AFTER = ['clean', 'war', BUNDLE_TASK_NAME]
+  static final String[] START_TASK_DEPENDS_ON = [BUNDLE_TASK_NAME]
+  static final String WAR_FILENAME = 'ROOT.war'
+
+  void apply(Project project) {
+
+    project.apply(plugin: 'war')
+    // workaround for context-root: '/'
+    project.war.archiveName = WAR_FILENAME
+    project.assemble.dependsOn(BUNDLE_TASK_NAME)
+
+    project.configurations {
+      payaraMicro
+    }
+    // 5.183 is broken, uber jar is fixed with 5.184
+    project.dependencies {
+      payaraMicro "fish.payara.extras:payara-micro:${PAYARA_MICRO_VERSION}" as String
+    }
+
+    project.task(type: Exec, BUNDLE_TASK_NAME) {
+      group = TASK_GROUP
+      description = BUNDLE_TASK_DESCRIPTION
+      dependsOn(BUNDLE_TASK_DEPENDS_ON)
+      shouldRunAfter(BUNDLE_TASK_SHOULD_RUN_AFTER)
+      commandLine(runInShell("${command(project)} --outputUberJar ${outputUberJar(project)}"))
+    }
+
+    project.task(type: Exec, START_TASK_NAME) {
+      group = TASK_GROUP
+      description = START_TASK_DESCRIPTION
+      dependsOn(START_TASK_DEPENDS_ON)
+      shouldRunAfter(START_TASK_SHOULD_RUN_AFTER)
+      commandLine(runInShell("java -jar ${outputUberJar(project)}"))
+    }
+  }
+
+  static String command(Project project) {
+    String payaraMicroJar = project.configurations.payaraMicro.asPath
+    "java -jar ${payaraMicroJar} --autoBindHttp --clusterName app --deploy ${project.war.archivePath}"
+  }
+
+  static String outputUberJar(Project project) {
+    "${project.buildDir}/${project.name}-${project.version}-microbundle.jar"
+  }
+
+  static String[] runInShell(String... command) {
+    String[] shell = Os.isFamily(Os.FAMILY_WINDOWS) ? ['cmd', '/c'] : ['sh', '-c']
+    shell + command
+  }
+}
+
+// Apply the plugin
+apply plugin: PayaraMicroGradlePlugin
