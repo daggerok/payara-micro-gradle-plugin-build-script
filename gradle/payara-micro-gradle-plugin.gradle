@@ -6,22 +6,22 @@ repositories {
 
 class PayaraMicroGradlePlugin implements Plugin<Project> {
 
-  static final String PAYARA_MICRO_VERSION = '5.182'
-  static final String TASK_GROUP = 'Payara Micro'
-  static final String BUNDLE_TASK_NAME = 'bundle'
-  static final String BUNDLE_TASK_DESCRIPTION = "Create payara-micro application uber jar: 'mvn package payara-micro:bundle'."
-  static final String[] BUNDLE_TASK_SHOULD_RUN_AFTER = ['clean', 'war']
-  static final String[] BUNDLE_TASK_DEPENDS_ON = ['war']
-  static final String START_TASK_NAME = 'start'
-  static final String START_TASK_DESCRIPTION = "Run payara-micro application: 'mvn package payara-micro:bundle payara-micro:start'."
-  static final String[] START_TASK_SHOULD_RUN_AFTER = ['clean', 'war', BUNDLE_TASK_NAME]
+  static final String PAYARA_MICRO_VERSION = "5.194"
+  static final String TASK_GROUP = "Payara Micro"
+  static final String BUNDLE_TASK_NAME = "bundle"
+  static final String BUNDLE_TASK_DESCRIPTION = 'Create payara-micro application uber jar: "mvn package payara-micro:bundle".'
+  static final String[] BUNDLE_TASK_SHOULD_RUN_AFTER = ["clean", "war"]
+  static final String[] BUNDLE_TASK_DEPENDS_ON = ["war"]
+  static final String START_TASK_NAME = "start"
+  static final String START_TASK_DESCRIPTION = 'Run payara-micro application: "mvn package payara-micro:bundle payara-micro:start".'
+  static final String[] START_TASK_SHOULD_RUN_AFTER = ["clean", "war", BUNDLE_TASK_NAME]
   static final String[] START_TASK_DEPENDS_ON = [BUNDLE_TASK_NAME]
-  static final String WAR_FILENAME = 'ROOT.war'
+  static final String WAR_FILENAME = "ROOT.war"
 
   void apply(Project project) {
 
-    project.apply(plugin: 'war')
-    // workaround for context-root: '/'
+    project.apply(plugin: "war")
+    // workaround for context-root: "/"
     project.war.archiveName = WAR_FILENAME
     project.assemble.dependsOn(BUNDLE_TASK_NAME)
 
@@ -60,7 +60,7 @@ class PayaraMicroGradlePlugin implements Plugin<Project> {
   }
 
   static String[] runInShell(String... command) {
-    String[] shell = Os.isFamily(Os.FAMILY_WINDOWS) ? ['cmd', '/c'] : ['sh', '-c']
+    String[] shell = Os.isFamily(Os.FAMILY_WINDOWS) ? ["cmd", "/c"] : ["sh", "-c"]
     shell + command
   }
 }
